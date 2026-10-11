@@ -1,0 +1,55 @@
+@{
+    ViewData["Title"] = "Upload Documents";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="upload-page">
+    <div class="upload-container">
+        <h1 class="upload-title">Upload Document</h1>
+        <p class="upload-subtitle">Upload PDF, DOCX, or TXT files to make them searchable in the Enterprise AI Bot.</p>
+
+        <div id="upload-error" class="error-banner" hidden></div>
+        <div id="upload-success" class="success-banner" hidden></div>
+
+        <form id="upload-form" enctype="multipart/form-data">
+            @Html.AntiForgeryToken()
+
+            <div class="form-group">
+                <label for="file-input">Document File <span class="required">*</span></label>
+                <div class="file-drop-zone" id="drop-zone">
+                    <input type="file" id="file-input" name="File" accept=".pdf,.docx,.txt" required />
+                    <span class="drop-label">Drop file here or <strong>browse</strong></span>
+                    <span id="file-name" class="file-name"></span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="department">Department</label>
+                <input type="text" id="department" name="Department" maxlength="100" placeholder="e.g. Human Resources" />
+            </div>
+
+            <div class="form-group">
+                <label for="document-type">Document Type</label>
+                <input type="text" id="document-type" name="DocumentType" maxlength="100" placeholder="e.g. Policy, Guideline" />
+            </div>
+
+            <div class="upload-actions">
+                <button type="submit" id="btn-upload" class="btn-primary">
+                    <span id="upload-label">Upload &amp; Index</span>
+                    <span id="upload-spinner" hidden>Indexing...</span>
+                </button>
+
+                <button type="button" id="btn-sync-existing" class="btn-secondary">Sync Existing Blobs</button>
+            </div>
+        </form>
+
+        <div id="upload-result" class="upload-result" hidden>
+            <p id="result-message"></p>
+            <p id="result-chunks"></p>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/upload.js"></script>
+}

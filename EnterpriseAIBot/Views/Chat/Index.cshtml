@@ -1,0 +1,71 @@
+@{
+    ViewData["Title"] = "Chat";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="chat-page @((User?.Identity?.IsAuthenticated ?? false) ? string.Empty : "login-page")">
+    @if (User?.Identity?.IsAuthenticated ?? false)
+    {
+        <div class="chat-container">
+            <div class="chat-toolbar">
+                <span class="chat-title">Ask a Question</span>
+                <button id="btn-clear" class="btn-clear" title="Clear conversation">&#10005; Clear</button>
+            </div>
+
+            <div id="chat-messages" class="chat-messages" aria-live="polite" aria-label="Chat messages">
+                <div class="message assistant-message">
+                    <div class="message-avatar">AI</div>
+                    <div class="message-content">
+                        Hello! I'm your Enterprise AI Bot. Ask me anything about internal company documents, policies, or guidelines.
+                    </div>
+                </div>
+            </div>
+
+            <div id="loading-indicator" class="loading-indicator" hidden>
+                <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+            </div>
+
+            <div id="error-banner" class="error-banner" hidden></div>
+
+            <form id="chat-form" class="chat-input-area" autocomplete="off">
+                @Html.AntiForgeryToken()
+                <textarea
+                    id="chat-input"
+                    class="chat-input"
+                    placeholder="Type your question here..."
+                    rows="1"
+                    maxlength="2000"
+                    aria-label="Your question"></textarea>
+                <button type="submit" id="btn-send" class="btn-send" aria-label="Send">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                        <path d="M2 21l21-9L2 3v7l15 2-15 2v7z"/>
+                    </svg>
+                </button>
+            </form>
+        </div>
+    }
+    else
+    {
+        <div class="auth-container">
+            <h2>Sign in to continue</h2>
+            <p>Use your company account to access the Enterprise AI Bot.</p>
+
+            <div id="login-error" class="error-banner" hidden></div>
+
+            <form id="login-form" class="auth-form" autocomplete="off">
+                @Html.AntiForgeryToken()
+                <label for="login-email">Email</label>
+                <input id="login-email" name="email" type="email" required />
+
+                <label for="login-password">Password</label>
+                <input id="login-password" name="password" type="password" required />
+
+                <button type="submit" id="btn-login" class="btn-primary">Sign In</button>
+            </form>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script src="~/js/chat.js" asp-append-version="true"></script>
+}

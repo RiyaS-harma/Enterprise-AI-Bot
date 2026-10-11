@@ -1,0 +1,16 @@
+**/bin/
+**/obj/
+**/node_modules/
+**/publish/
+**/TestResults/
+.vs/
+.vscode/*
+!.vscode/extensions.json
+*.user
+*.suo
+*.log
+*.zip
+.env
+.env.*
+!.env.example
+appsettings.Development.json

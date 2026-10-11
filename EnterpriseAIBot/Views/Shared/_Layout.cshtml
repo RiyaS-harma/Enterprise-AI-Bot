@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Enterprise AI Bot</title>
+    <link rel="stylesheet" href="~/css/chat.css" />
+</head>
+<body>
+    <header class="app-header">
+        <div class="header-inner">
+            <div class="brand">
+                <span class="brand-logo">&#9670;</span>
+                <span class="brand-name">Enterprise</span>
+                <span class="brand-divider">|</span>
+                <span class="brand-product">AI Bot</span>
+            </div>
+
+            <div class="header-auth">
+                @if (User?.Identity?.IsAuthenticated ?? false)
+                {
+                    <span class="user-pill header-user-pill">@User.Identity!.Name</span>
+                    <form id="logout-form" hidden>
+                        @Html.AntiForgeryToken()
+                    </form>
+                    <button id="btn-logout" type="button" class="btn-header">Logout</button>
+                }
+                else
+                {
+                    <a class="btn-header" href="/Chat">Sign In</a>
+                }
+            </div>
+        </div>
+    </header>
+
+    @{
+        var currentPath = Context?.Request?.Path.Value ?? string.Empty;
+        var isAuthenticated = User?.Identity?.IsAuthenticated ?? false;
+        var isAdmin = User?.IsInRole("Admin") ?? false;
+        var isEmployee = User?.IsInRole("Employee") ?? false;
+        var sidebarChatHistory = ViewData["SidebarChatHistory"] as IEnumerable<EnterpriseAIBot.Models.SidebarChatHistoryItem>
+            ?? Enumerable.Empty<EnterpriseAIBot.Models.SidebarChatHistoryItem>();
+    }
+
+    <div class="app-shell">
+        @if (isAuthenticated)
+        {
+            <aside class="side-nav">
+                <div class="side-nav-brand">Enterprise AI Bot</div>
+
+                <nav class="side-nav-links" aria-label="Primary">
+                    <a class="side-nav-item @(currentPath.StartsWith("/Chat", StringComparison.OrdinalIgnoreCase) ? "active" : string.Empty)" href="/Chat">💬 Chat</a>
+                    @if (isAdmin)
+                    {
+                        <a class="side-nav-item @(currentPath.StartsWith("/Document/Upload", StringComparison.OrdinalIgnoreCase) ? "active" : string.Empty)" href="/Document/Upload">📄 Upload Documents</a>
+                        <a class="side-nav-item @(currentPath.StartsWith("/Admin/Employees", StringComparison.OrdinalIgnoreCase) ? "active" : string.Empty)" href="/Admin/Employees">👤 Employee Registration</a>
+                    }
+                </nav>
+
+                @if (isEmployee)
+                {
+                    <section class="sidebar-history" aria-label="Chat history">
+                        <h3 class="sidebar-history-title">Recent Chats</h3>
+                        <div id="sidebar-history-empty" class="sidebar-history-empty" @(sidebarChatHistory.Any() ? "hidden" : null)>
+                            No chat history yet.
+                        </div>
+                        <ul id="sidebar-history-list" class="sidebar-history-list">
+                            @foreach (var item in sidebarChatHistory)
+                            {
+                                <li>
+                                    <button
+                                        type="button"
+                                        class="sidebar-history-item"
+                                        data-conversation-id="@item.ConversationId"
+                                        title="Open this conversation">
+                                        @item.Preview
+                                    </button>
+                                </li>
+                            }
+                        </ul>
+                    </section>
+                }
+            </aside>
+        }
+
+        <main class="app-main">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="app-footer">
+        <span>© @DateTime.Now.Year Enterprise AI Bot. Internal use only.</span>
+    </footer>
+
+    @await RenderSectionAsync("Scripts", required: false)
+    <script src="~/js/auth.js"></script>
+</body>
+</html>
